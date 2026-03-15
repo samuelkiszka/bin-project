@@ -1,9 +1,10 @@
+import logging
 from collections import defaultdict
 
 from torch.utils.data import Dataset
 import numpy as np
 
-
+logger = logging.getLogger(__name__)
 
 class SiameseDataset(Dataset):
     def __init__(self, x, y):
@@ -19,7 +20,7 @@ class SiameseDataset(Dataset):
         self.classes = list(self.class_indices.keys())
 
     def __len__(self):
-        return len(self.data) # * 10
+        return len(self.data) * 10  # We will generate pairs on the fly, so we can return a larger length to allow for more pairs
 
     def __getitem__(self, idx):
         idx1 = np.random.randint(0, len(self.data))

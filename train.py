@@ -81,13 +81,14 @@ def main():
         trainer = Trainer(model, optimizer, loss_fn, device)
         trainer.train(train_loader, num_epochs=args.num_epochs)
 
-        acc = trainer.evaluate(test_loader)
+        acc, auc, threshold = trainer.evaluate(test_loader)
 
-        logger.info(f"Fold {fold+1} Train Accuracy: {acc}")
+        logger.info(f"Fold {fold+1} - Test Accuracy: {acc:.4f}, AUC: {auc:.4f}, Threshold: {threshold:.4f}")
+
         fold_results.append(acc)
 
     avg_acc = sum(fold_results) / len(fold_results)
-    logger.info(f"Average Train Accuracy: {avg_acc}")
+    logger.info(f"Average Train Accuracy: {avg_acc:.4f}")
 
 
 if __name__ == "__main__":
