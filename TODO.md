@@ -21,3 +21,11 @@
 - AUC
 - precision
 - DET curves
+
+
+# Experiments
+- [ ] different embedding sizes (32, 64, 128, 256)
+- [ ] different number of vgg layers (1, 2, 3) - number of computations
+- [ ] different number of training pairs per epoch (1000, 5000, 10000)
+- [ ] pairs generated per epoch (100, 200, 500, 585, 1000, 2000, 5000, 10000) (data length is 585)
+- [ ] different time for training (1, 2, 5, 10 epochs)

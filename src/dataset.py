@@ -7,9 +7,10 @@ import numpy as np
 logger = logging.getLogger(__name__)
 
 class SiameseDataset(Dataset):
-    def __init__(self, x, y):
+    def __init__(self, x, y, pairs_per_epoch=None):
         self.data = x
         self.labels = y
+        self.pairs_per_epoch = pairs_per_epoch
 
         # Build class index dictionary
         self.class_indices = defaultdict(list)
@@ -18,9 +19,15 @@ class SiameseDataset(Dataset):
             self.class_indices[label].append(idx)
 
         self.classes = list(self.class_indices.keys())
+        self.neg_classes = {
+            c: [x for x in self.classes if x != c]
+            for c in self.classes
+        }
 
     def __len__(self):
-        return len(self.data) * 10  # We will generate pairs on the fly, so we can return a larger length to allow for more pairs
+        if self.pairs_per_epoch is not None:
+            return self.pairs_per_epoch
+        return len(self.data)
 
     def __getitem__(self, idx):
         idx1 = np.random.randint(0, len(self.data))
@@ -29,13 +36,16 @@ class SiameseDataset(Dataset):
         label1 = self.labels[idx1]
 
         # Randomly decide to create a positive or negative pair in a 1:2 ratio
-        if np.random.rand() < 0.33:
+        if np.random.rand() < 0.5:
             # Positive pair
-            idx2 = np.random.choice(self.class_indices[label1])
+            indices = self.class_indices[label1]
+            idx2 = idx1
+            while idx2 == idx1:  # Ensure we don't pick the same sample
+                idx2 = np.random.choice(self.class_indices[label1])
             label = 1
         else:
             # Negative pair
-            label2 = np.random.choice([l for l in self.classes if l != label1])
+            label2 = np.random.choice(self.neg_classes[label1])
             idx2 = np.random.choice(self.class_indices[label2])
             label = 0
 

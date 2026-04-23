@@ -1,7 +1,11 @@
+from time import perf_counter
+
 from sklearn.metrics import roc_curve, roc_auc_score
 import numpy as np
 import torch
 import logging
+
+import torch.nn.functional as F
 
 
 logger = logging.getLogger(__name__)
@@ -19,8 +23,8 @@ class Trainer:
         x1, x2, label = x1.to(self.device), x2.to(self.device), label.to(self.device)
 
         # Forward pass
-        predictions = self.model(x1, x2)
-        loss = self.loss_fn(predictions, label)
+        emb1, emb2 = self.model(x1, x2)
+        loss = self.loss_fn(emb1, emb2, label.float())
 
         # Backward pass and optimization
         self.optimizer.zero_grad()
@@ -32,21 +36,28 @@ class Trainer:
 
     def train(self, train_loader, num_epochs):
         self.model.train()
+        times = []
+        losses = []
         for epoch in range(num_epochs):
+            epoch_start = perf_counter()
             total_loss = 0.0
             for batch_idx, (x, y, label) in enumerate(train_loader):
                 loss = self.train_step(x, y, label)
                 total_loss += loss
-                # if batch_idx == 1:
-                #     break  # Limit to 10 batches per epoch to test training loop
 
+            epoch_end = perf_counter()
+            epoch_time = epoch_end - epoch_start
             avg_loss = total_loss / len(train_loader)
-            logger.info(f'Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}')
+            logger.info(f'Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}, Time: {epoch_time:.2f}s')
+            times.append(round(epoch_time, 5))
+            losses.append(round(avg_loss, 5))
+
+        return times, losses
 
     def evaluate(self, test_loader):
         self.model.eval()
 
-        all_scores = []
+        all_distances = []
         all_labels = []
 
         with (torch.no_grad()):
@@ -54,29 +65,35 @@ class Trainer:
                 x1 = x1.to(self.device)
                 x2 = x2.to(self.device)
 
-                logits = self.model(x1, x2)
+                emb1, emb2 = self.model(x1, x2)
 
-                scores = torch.sigmoid(logits).cpu().numpy()
+                distance = F.pairwise_distance(emb1, emb2).cpu().numpy()
                 labels = label.numpy()
 
-                all_scores.extend(scores)
+                all_distances.extend(distance)
                 all_labels.extend(labels)
 
         # Convert to numpy arrays
-        all_scores = np.array(all_scores)
+        all_distances = np.array(all_distances)
         all_labels = np.array(all_labels)
+        similarity_scores = -all_distances  # Higher similarity = more likely to be the same class
+
+        logger.info("pos mean: %f", all_distances[all_labels == 1].mean())
+        logger.info("neg mean: %f", all_distances[all_labels == 0].mean())
 
         # ROC-AUC
-        auc = roc_auc_score(all_labels, all_scores)
+        auc = roc_auc_score(all_labels, similarity_scores)
 
         # ROC curve
-        fpr, tpr, thresholds = roc_curve(all_labels, all_scores)
+        fpr, tpr, thresholds = roc_curve(all_labels, similarity_scores)
 
         # Optimal treshold (Youden's J statistic)
         optimal_idx = np.argmax(tpr - fpr)
         optimal_threshold = thresholds[optimal_idx]
 
-        preds = (all_scores >= optimal_threshold).astype(int)
+        optimal_threshold_dist = -optimal_threshold  # Convert back to distance threshold
+
+        preds = (all_distances < optimal_threshold_dist).astype(int)
         accuracy = np.mean(preds == all_labels)
 
         return accuracy, auc, optimal_threshold
