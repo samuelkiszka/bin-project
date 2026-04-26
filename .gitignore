@@ -1,6 +1,7 @@
 data/*
 logs/*
 results/*
+models/*
 
 
 
@@ -8,5 +9,7 @@ __pycache__/*
 *.pyc
 *.pyo
 *.pyd
+*.png
+*.csv
 
 .idea/*

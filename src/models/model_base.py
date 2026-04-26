@@ -1,5 +1,4 @@
 import torch
-import math
 from thop import profile
 
 import torch.nn.functional as F
@@ -10,19 +9,6 @@ def create_vgg_block(
     output_channels: int,
     subsampling: tuple[int, int] = (2, 2)
 ) -> torch.nn.Sequential:
-
-    """
-    Create one convolutional block used in the encoder
-
-    Parameters:
-        input_channels (int): Number of input channels.
-        output_channels (int): Number of output channels.
-        subsampling (tuple[int, int]): Pooling kernel size and stride.
-
-    Returns:
-        nn.Sequential: Convolutional block.
-    """
-
     return torch.nn.Sequential(
         torch.nn.Conv2d(
             input_channels,

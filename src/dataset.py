@@ -1,16 +1,28 @@
 import logging
 from collections import defaultdict
 
+import torch
 from torch.utils.data import Dataset
 import numpy as np
 
 logger = logging.getLogger(__name__)
 
+def create_dataloader(dataset, batch_size, num_workers=1, shuffle=True, drop_last=True):
+    return torch.utils.data.DataLoader(
+        dataset,
+        num_workers=num_workers,
+        batch_size=batch_size,
+        shuffle=shuffle,
+        drop_last=drop_last,
+        pin_memory=True
+    )
+
 class SiameseDataset(Dataset):
-    def __init__(self, x, y, pairs_per_epoch=None):
+    def __init__(self, x, y, pairs_per_epoch=None, all=False):
         self.data = x
         self.labels = y
         self.pairs_per_epoch = pairs_per_epoch
+        self.all = all
 
         # Build class index dictionary
         self.class_indices = defaultdict(list)
@@ -30,12 +42,21 @@ class SiameseDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
+        if self.all:
+            x = self.data[idx]
+            label = self.labels[idx]
+
+            return (
+                np.expand_dims(x, axis=0).astype(np.float32),
+                np.expand_dims(x, axis=0).astype(np.float32),
+                np.float32(label),
+            )
         idx1 = np.random.randint(0, len(self.data))
 
         x1 = self.data[idx1]
         label1 = self.labels[idx1]
 
-        # Randomly decide to create a positive or negative pair in a 1:2 ratio
+        # Randomly decide to create a positive or negative pair in a 1:1 ratio
         if np.random.rand() < 0.5:
             # Positive pair
             indices = self.class_indices[label1]

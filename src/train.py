@@ -23,6 +23,7 @@ def parse_args():
     parser.add_argument("--pairs_per_epoch", type=int, default=1, help="Number of pairs to generate per epoch.")
     parser.add_argument("--model", type=str, default="baseline", choices=get_models().keys(), help="Model architecture to use.")
     parser.add_argument("--runs_per_model", type=int, default=1, help="Number of runs per model to use.")
+    parser.add_argument("--note", type=str, default="", help="Additional note to include in the result file name.")
 
     return parser.parse_args()
 
@@ -66,7 +67,7 @@ def main():
     ensure_directory_exists(RES_DIR)
     ensure_directory_exists(LOG_DIR)
 
-    results = Results(args.model)
+    results = Results(args.model, args.note)
     data, labels = load_data(DATA_PATH)
 
     for model in get_trained_model(args.model):
@@ -77,6 +78,9 @@ def main():
             args=args,
             device=device
         )
+        logger.info("-------------------------------")
+        logger.info(f"Starting experiment for model: {model.NAME}")
+        logger.info(f"Results will be saved under: {results.results_name}")
         experiment.run()
         results.add_experiment_result(experiment)
         results.save_results()

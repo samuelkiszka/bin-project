@@ -3,9 +3,9 @@ import torch
 from src.models.model_base import create_vgg_block, BaseModel
 
 
-class BaselineModel(BaseModel):
-    NAME = 'baseline'
-    def __init__(self, emb_dim=128):
+class VGGEmbedNet1(BaseModel):
+    NAME = 'VGGEmbedNet1'
+    def __init__(self, emb_dim):
         conv = torch.nn.Sequential(
             create_vgg_block(1, 32, subsampling=(4, 4)),
             create_vgg_block(32, 64, subsampling=(4, 4)),
@@ -15,7 +15,6 @@ class BaselineModel(BaseModel):
         )
 
         output_layer = torch.nn.Sequential(
-            torch.nn.LeakyReLU(),
             torch.nn.Linear(512, emb_dim)
         )
 
