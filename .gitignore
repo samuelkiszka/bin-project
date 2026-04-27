@@ -3,6 +3,7 @@ logs/*
 results/*
 models/*
 
+!data/siam_xkiszk00.npz
 
 
 __pycache__/*
