@@ -1,5 +1,3 @@
-import json
-
 import torch
 import argparse
 from datetime import datetime
@@ -60,7 +58,6 @@ def get_trained_model(model_name):
 def main():
     args = parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # torch.multiprocessing.set_start_method('spawn')
     configure_logging()
     log_args(args)
 

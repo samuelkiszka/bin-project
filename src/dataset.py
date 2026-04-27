@@ -59,7 +59,6 @@ class SiameseDataset(Dataset):
         # Randomly decide to create a positive or negative pair in a 1:1 ratio
         if np.random.rand() < 0.5:
             # Positive pair
-            indices = self.class_indices[label1]
             idx2 = idx1
             while idx2 == idx1:  # Ensure we don't pick the same sample
                 idx2 = np.random.choice(self.class_indices[label1])

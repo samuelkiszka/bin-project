@@ -11,7 +11,7 @@ import itertools
 
 # ── CSV ────────────────────────────────────────────────────────────────────────
 
-FIELDS = ["model", "emb_dim", "run", "fold", "fold_time", "fold_acc", "fold_auc"]
+FIELDS = ["model", "pairs_per_epoch", "run", "fold", "fold_time", "fold_acc", "fold_auc"]
 
 
 def load_files(folder: str, prefix: str) -> list[dict]:
@@ -32,7 +32,7 @@ def parse_experiment(experiment: dict) -> list[dict]:
     rows = []
 
     model_name = experiment["model"]
-    emb_dim = experiment["embedding_dim"]   # ✔️ TOTO JE KLÍČ
+    pairs_per_epoch = experiment["pairs_per_epoch"]   # ✔️ TOTO JE KLÍČ
 
     exp_results = experiment["experiment_results"]
 
@@ -47,7 +47,7 @@ def parse_experiment(experiment: dict) -> list[dict]:
 
             rows.append({
                 "model": model_name,
-                "emb_dim": emb_dim,          # ✔️ přidáno
+                "pairs_per_epoch": pairs_per_epoch,
                 "run": run_num,
                 "fold": fold_num,
                 "fold_time": fold_time,
@@ -80,7 +80,7 @@ def embedding_dim_global_effect(records: list[dict], alpha=0.05):
     for model in df["model"].unique():
         sub = df[df["model"] == model]
 
-        dims = sorted(sub["emb_dim"].unique())
+        dims = sorted(sub["pairs_per_epoch"].unique())
 
         print(f"\nModel: {model}")
 
@@ -88,7 +88,7 @@ def embedding_dim_global_effect(records: list[dict], alpha=0.05):
             print("  Not enough embedding dimensions.")
             continue
 
-        groups = [sub[sub["emb_dim"] == d]["fold_auc"].values for d in dims]
+        groups = [sub[sub["pairs_per_epoch"] == d]["fold_auc"].values for d in dims]
 
         # ── GLOBAL TEST ─────────────────────────────────────────────
         H, p_global = kruskal(*groups)
@@ -103,8 +103,8 @@ def embedding_dim_global_effect(records: list[dict], alpha=0.05):
         results = []
 
         for d1, d2 in itertools.combinations(dims, 2):
-            a = sub[sub["emb_dim"] == d1]["fold_auc"]
-            b = sub[sub["emb_dim"] == d2]["fold_auc"]
+            a = sub[sub["pairs_per_epoch"] == d1]["fold_auc"]
+            b = sub[sub["pairs_per_epoch"] == d2]["fold_auc"]
 
             stat, p = mannwhitneyu(a, b, alternative="two-sided")
             results.append((d1, d2, p))
@@ -116,8 +116,8 @@ def embedding_dim_global_effect(records: list[dict], alpha=0.05):
         # print sorted
         for d1, d2, p in sorted(results_adj, key=lambda x: x[2]):
             if p < alpha:
-                mean_a = sub[sub["emb_dim"] == d1]["fold_auc"].mean()
-                mean_b = sub[sub["emb_dim"] == d2]["fold_auc"].mean()
+                mean_a = sub[sub["pairs_per_epoch"] == d1]["fold_auc"].mean()
+                mean_b = sub[sub["pairs_per_epoch"] == d2]["fold_auc"].mean()
 
                 direction = "↑" if mean_b > mean_a else "↓"
 
@@ -141,7 +141,7 @@ def make_boxplot(records: list[dict], out_path: str):
     )
 
     # ── embedding dim ────────────────────────────────────────────────────────
-    emb_order = sorted(df["emb_dim"].unique())
+    emb_order = sorted(df["pairs_per_epoch"].unique())
 
     sns.set_theme(style="whitegrid", context="talk")
 
@@ -161,10 +161,10 @@ def make_boxplot(records: list[dict], out_path: str):
 
         sns.boxplot(
             data=sub,
-            x="emb_dim",
+            x="pairs_per_epoch",
             y="fold_auc",
             order=emb_order,
-            hue='emb_dim',
+            hue='pairs_per_epoch',
             hue_order=emb_order,
             palette="viridis",
             legend=False,
@@ -175,7 +175,7 @@ def make_boxplot(records: list[dict], out_path: str):
 
         sns.stripplot(
             data=sub,
-            x="emb_dim",
+            x="pairs_per_epoch",
             y="fold_auc",
             order=emb_order,
             size=3,
@@ -185,7 +185,7 @@ def make_boxplot(records: list[dict], out_path: str):
         )
 
         ax.set_title(model, fontsize=14, fontweight="bold")
-        ax.set_xlabel("Dimenze embeddingu")
+        ax.set_xlabel("Počet vzorků na epochu")
         ax.set_ylabel("AUC")
 
         sns.despine(ax=ax)
@@ -202,8 +202,8 @@ def main():
     parser = argparse.ArgumentParser(description="Analyse contrastive-learning experiment results.")
     parser.add_argument("--folder", default=".", help="Folder containing JSON result files")
     parser.add_argument("--prefix", default="",  help="Filename prefix to filter (e.g. 'ex1')")
-    parser.add_argument("--csv",    default="ex2-results.csv",      help="Output CSV path")
-    parser.add_argument("--plot",   default="emb_dim_results.png",  help="Output plot path")
+    parser.add_argument("--csv",    default="ex3-results.csv",      help="Output CSV path")
+    parser.add_argument("--plot",   default="pairs_per_epoch_results.png",  help="Output plot path")
     args = parser.parse_args()
 
     records = load_files(args.folder, args.prefix)

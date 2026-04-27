@@ -13,16 +13,16 @@
 echo ""
 echo ""
 echo "Running Experiment 1: VGGEmbedNet Architecture Comparison"
-#python3 -m src.train \
-#    --emb_dim 32 \
-#    --batch_size 32 \
-#    --lr 0.0003 \
-#    --num_epochs 30 \
-#    --num_workers 2 \
-#    --pairs_per_epoch 1000 \
-#    --model "VGGEmbedNet1" \
-#    --note "ex1" \
-#    --runs_per_model 3 \
+python3 -m src.train \
+    --emb_dim 32 \
+    --batch_size 32 \
+    --lr 0.0003 \
+    --num_epochs 30 \
+    --num_workers 2 \
+    --pairs_per_epoch 1000 \
+    --model "VGGEmbedNet1" \
+    --note "ex1" \
+    --runs_per_model 3 \
 
 #"VGGEmbedNet3": {
 #    "macs": 47255680,
@@ -31,16 +31,16 @@ echo "Running Experiment 1: VGGEmbedNet Architecture Comparison"
 echo ""
 echo ""
 echo "Running Experiment 1: VGGEmbedNet Architecture Comparison"
-#python3 -m src.train \
-#    --emb_dim 32 \
-#    --batch_size 32 \
-#    --lr 0.0003 \
-#    --num_epochs 30 \
-#    --num_workers 2 \
-#    --pairs_per_epoch 1000 \
-#    --model "VGGEmbedNet3" \
-#    --note "ex1" \
-#    --runs_per_model 3 \
+python3 -m src.train \
+    --emb_dim 32 \
+    --batch_size 32 \
+    --lr 0.0003 \
+    --num_epochs 30 \
+    --num_workers 2 \
+    --pairs_per_epoch 1000 \
+    --model "VGGEmbedNet3" \
+    --note "ex1" \
+    --runs_per_model 3 \
 
 #"VGGEmbedNet6": {
 #    "macs": 113216,
@@ -49,16 +49,16 @@ echo "Running Experiment 1: VGGEmbedNet Architecture Comparison"
 echo ""
 echo ""
 echo "Running Experiment 1: VGGEmbedNet Architecture Comparison"
-#python3 -m src.train \
-#    --emb_dim 32 \
-#    --batch_size 32 \
-#    --lr 0.0003 \
-#    --num_epochs 30 \
-#    --num_workers 2 \
-#    --pairs_per_epoch 1000 \
-#    --model "VGGEmbedNet6" \
-#    --note "ex1" \
-#    --runs_per_model 3 \
+python3 -m src.train \
+    --emb_dim 32 \
+    --batch_size 32 \
+    --lr 0.0003 \
+    --num_epochs 30 \
+    --num_workers 2 \
+    --pairs_per_epoch 1000 \
+    --model "VGGEmbedNet6" \
+    --note "ex1" \
+    --runs_per_model 3 \
 
 #"VGGEmbedNet8": {
 #    "macs": 7568,
@@ -67,16 +67,16 @@ echo "Running Experiment 1: VGGEmbedNet Architecture Comparison"
 echo ""
 echo ""
 echo "Running Experiment 1: VGGEmbedNet Architecture Comparison"
-#python3 -m src.train \
-#    --emb_dim 32 \
-#    --batch_size 32 \
-#    --lr 0.0003 \
-#    --num_epochs 30 \
-#    --num_workers 2 \
-#    --pairs_per_epoch 1000 \
-#    --model "VGGEmbedNet8" \
-#    --note "ex1" \
-#    --runs_per_model 3 \
+python3 -m src.train \
+    --emb_dim 32 \
+    --batch_size 32 \
+    --lr 0.0003 \
+    --num_epochs 30 \
+    --num_workers 2 \
+    --pairs_per_epoch 1000 \
+    --model "VGGEmbedNet8" \
+    --note "ex1" \
+    --runs_per_model 3 \
 
 #"VGGEmbedNet13": {
 #    "macs": 168,
@@ -85,16 +85,16 @@ echo "Running Experiment 1: VGGEmbedNet Architecture Comparison"
 echo ""
 echo ""
 echo "Running Experiment 1: VGGEmbedNet Architecture Comparison"
-#python3 -m src.train \
-#    --emb_dim 4 \
-#    --batch_size 32 \
-#    --lr 0.0003 \
-#    --num_epochs 30 \
-#    --num_workers 2 \
-#    --pairs_per_epoch 1000 \
-#    --model "VGGEmbedNet13" \
-#    --note "ex1" \
-#    --runs_per_model 3 \
+python3 -m src.train \
+    --emb_dim 4 \
+    --batch_size 32 \
+    --lr 0.0003 \
+    --num_epochs 30 \
+    --num_workers 2 \
+    --pairs_per_epoch 1000 \
+    --model "VGGEmbedNet13" \
+    --note "ex1" \
+    --runs_per_model 3 \
 
 ###
 # Experiment 2: Embedding Dimension Comparison

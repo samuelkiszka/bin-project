@@ -1,5 +1,6 @@
-#cd /storage/plzen1/home/xkiszk00/repos/bin/
-#mamba activate /storage/plzen1/home/xkiszk00/bin_env
+##
+#  Train models for the report
+##
 
 #python3 -m src.train \
 #    --emb_dim 32 \
@@ -13,10 +14,26 @@
 #    --runs_per_model 1 \
 
 
-python3 -m src.analysis2 \
-    --folder "results" \
-    --prefix "ex2" \
+##
+#  Generate graphs and tables for the report
+##
 
+#python3 -m src.analysis1 \
+#    --folder "results" \
+#    --prefix "ex1" \
+#
+#python3 -m src.analysis2 \
+#    --folder "results" \
+#    --prefix "ex2" \
+#
+#python3 -m src.analysis3 \
+#    --folder "results" \
+#    --prefix "ex3" \
+
+
+##
+#  Generate embedding visualizations for the report
+##
 
 #python3 -m src.plot \
 #    --models "VGGEmbedNet1" "VGGEmbedNet6" "VGGEmbedNet8" "VGGEmbedNet13" \
